@@ -1,0 +1,19 @@
+
+<wandb.sdk.wandb_run.Run object at 0x7f4a77af4070>
+  File "<stdin>", line 9
+    wandb.finish()
+    ^^^^^
+SyntaxError: invalid syntax
+<wandb.sdk.wandb_run.Run object at 0x7f4a77af4070>
+  File "<stdin>", line 9
+    wandb.finish()
+    ^^^^^
+SyntaxError: invalid syntax
+  File "<stdin>", line 1
+    wandb.log({"acc": acc, "loss": loss})
+IndentationError: unexpected indent
+<wandb.sdk.wandb_run.Run object at 0x7f4a77af4070>
+  File "<stdin>", line 9
+    wandb.finish()
+    ^^^^^
+SyntaxError: invalid syntax

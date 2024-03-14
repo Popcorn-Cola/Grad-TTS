@@ -1,0 +1,10 @@
+Cython
+numpy
+torch
+matplotlib
+einops
+inflect
+Unidecode
+librosa
+scipy
+tqdm

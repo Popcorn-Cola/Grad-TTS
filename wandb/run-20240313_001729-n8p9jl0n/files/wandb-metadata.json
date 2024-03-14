@@ -1,0 +1,213 @@
+{
+    "os": "Linux-5.15.0-97-generic-x86_64-with-glibc2.35",
+    "python": "3.10.0",
+    "heartbeatAt": "2024-03-13T00:17:29.609734",
+    "startedAt": "2024-03-13T00:17:29.054979",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "<python with no main file>",
+    "codePathLocal": null,
+    "host": "mimas",
+    "username": "acp23xt",
+    "executable": "/store/store4/software/bin/anaconda3/envs/grad-tts-masking/bin/python",
+    "cpu_count": 16,
+    "cpu_count_logical": 32,
+    "cpu_freq": {
+        "current": 1729.1366874999999,
+        "min": 1500.0,
+        "max": 3100.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 1500.0,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1500.0,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 2376.537,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1500.0,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 3100.0,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1500.0,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 3100.0,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 3100.0,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1500.0,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1500.0,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1500.0,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1500.0,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1500.0,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1500.0,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1500.0,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1500.0,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1500.0,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 2400.0,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1500.0,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1375.532,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1500.0,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1500.0,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1500.0,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1500.0,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1500.0,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1500.0,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1500.0,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1500.0,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1500.0,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1500.0,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1500.0,
+            "min": 1500.0,
+            "max": 3100.0
+        },
+        {
+            "current": 1500.0,
+            "min": 1500.0,
+            "max": 3100.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 88.11238861083984,
+            "used": 62.61281967163086
+        }
+    },
+    "gpu": "NVIDIA RTX A4500",
+    "gpu_count": 4,
+    "gpu_devices": [
+        {
+            "name": "NVIDIA RTX A4500",
+            "memory_total": 21464350720
+        },
+        {
+            "name": "NVIDIA RTX A4500",
+            "memory_total": 21464350720
+        },
+        {
+            "name": "NVIDIA RTX A4500",
+            "memory_total": 21464350720
+        },
+        {
+            "name": "NVIDIA RTX A4500",
+            "memory_total": 21464350720
+        }
+    ],
+    "memory": {
+        "total": 125.7509765625
+    }
+}
