@@ -12,6 +12,7 @@ import numpy as np
 from tqdm import tqdm
 
 import torch
+import os
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
@@ -57,6 +58,11 @@ dec_dim = params.dec_dim
 beta_min = params.beta_min
 beta_max = params.beta_max
 pe_scale = params.pe_scale
+
+
+#create log_dir with the name of today's date.
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
 
 
 if __name__ == "__main__":

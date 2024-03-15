@@ -60,6 +60,9 @@ beta_min = params.beta_min
 beta_max = params.beta_max
 pe_scale = params.pe_scale
 
+#create log_dir with the name of today's date.
+if not os.path.exists(log_dir):
+    os.makedirs(log_dir)
 
 if __name__ == "__main__":
     torch.manual_seed(random_seed)
