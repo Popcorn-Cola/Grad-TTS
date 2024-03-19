@@ -20,15 +20,25 @@ from text import text_to_sequence, cmudict
 from text.symbols import symbols
 from utils import intersperse
 
-import sys
+import sys, os, re
 sys.path.append('./hifi-gan/')
 from env import AttrDict
 from models import Generator as HiFiGAN
 
+import matplotlib.pyplot as plot
 
 HIFIGAN_CONFIG = './checkpts/hifigan-config.json'
 HIFIGAN_CHECKPT = './checkpts/hifigan.pt'
 
+
+def pt_to_pdf(pt,pdf,vmin=-12.5,vmax=0.0):
+  spec=pt
+  fig=plot.figure(figsize=(20,4),tight_layout=True)
+  subfig=fig.add_subplot()
+  image=subfig.imshow(spec,cmap="jet",origin="lower",aspect="equal",interpolation="none",vmax=vmax,vmin=vmin)
+  fig.colorbar(mappable=image,orientation='vertical',ax=subfig,shrink=0.5)
+  plot.savefig(pdf,format="pdf")
+  plot.close()
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -43,6 +53,10 @@ if __name__ == '__main__':
         spk = torch.LongTensor([args.speaker_id]).cuda()
     else:
         spk = None
+
+    pattern = re.compile(r'grad_(\d+)\.pt')
+    match = pattern.search(args.checkpoint)
+    Epoch_ind = int(match.group(1))
     
     print('Initializing Grad-TTS...')
     generator = GradTTS(len(symbols)+1, params.n_spks, params.spk_emb_dim,
@@ -80,6 +94,11 @@ if __name__ == '__main__':
 
             audio = (vocoder.forward(y_dec).cpu().squeeze().clamp(-1, 1).numpy() * 32768).astype(np.int16)
             
-            write(f'./out/sample_{i}.wav', 22050, audio)
+            write(f'./out/Epoch_{Epoch_ind}.wav', 22050, audio)
+            
+            pt_to_pdf(y_enc.cpu().squeeze(0), f'./out/Epoch_{Epoch_ind}_Encoder.pdf')
+            pt_to_pdf(y_dec.cpu().squeeze(0), f'./out/Epoch__{Epoch_ind}_Decoder.pdf')
 
+
+            
     print('Done. Check out `out` folder for samples.')
