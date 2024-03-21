@@ -97,7 +97,7 @@ if __name__ == '__main__':
             write(f'./out/Epoch_{Epoch_ind}.wav', 22050, audio)
             
             pt_to_pdf(y_enc.cpu().squeeze(0), f'./out/Epoch_{Epoch_ind}_Encoder.pdf')
-            pt_to_pdf(y_dec.cpu().squeeze(0), f'./out/Epoch__{Epoch_ind}_Decoder.pdf')
+            pt_to_pdf(y_dec.cpu().squeeze(0), f'./out/Epoch_{Epoch_ind}_Decoder.pdf')
 
 
             

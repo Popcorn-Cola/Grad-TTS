@@ -15,6 +15,8 @@ import torch
 import os
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
+import re
+import glob
 
 import params
 from model import GradTTS
@@ -27,6 +29,7 @@ from six.moves import range
 train_filelist_path = params.train_filelist_path
 valid_filelist_path = params.valid_filelist_path
 cmudict_path = params.cmudict_path
+checkpoint_path = params.checkpoint_path
 add_blank = params.add_blank
 
 log_dir = params.log_dir
@@ -85,9 +88,25 @@ if __name__ == "__main__":
                                   win_length, f_min, f_max)
 
     print('Initializing model...')
+
     model = GradTTS(nsymbols, 1, None, n_enc_channels, filter_channels, filter_channels_dp, 
                     n_heads, n_enc_layers, enc_kernel, enc_dropout, window_size, 
                     n_feats, dec_dim, beta_min, beta_max, pe_scale).cuda()
+    
+    checkpoint_name = glob.glob(checkpoint_path)
+
+    if len(checkpoint_name) > 0:
+        print("Checkpt exists. Checkpt name:", checkpoint_name[0])
+        checkpoint = torch.load(checkpoint_name[0])
+    else: 
+        print(f'Checkpt does not exist, {checkpoint_path}')
+    model.load_state_dict(checkpoint)
+    match = re.search(r'grad_(.*).pt', checkpoint_name[0])
+    if match:
+        value = match.group(1)
+        print("Starting from epoch", value)
+
+
     print(('Number of encoder + duration predictor parameters: %.2fm' % (model.encoder.nparams/1e6)))
     print(('Number of decoder parameters: %.2fm' % (model.decoder.nparams/1e6)))
     print(('Total parameters: %.2fm' % (model.nparams/1e6)))
@@ -143,12 +162,12 @@ if __name__ == "__main__":
                 diff_losses.append(diff_loss.item())
                 
                 if batch_idx % 5 == 0:
-                    msg = f'Epoch: {epoch}, iteration: {iteration} | dur_loss: {dur_loss.item()}, prior_loss: {prior_loss.item()}, diff_loss: {diff_loss.item()}'
+                    msg = f'Epoch: {epoch+int(value)}, iteration: {iteration} | dur_loss: {dur_loss.item()}, prior_loss: {prior_loss.item()}, diff_loss: {diff_loss.item()}'
                     progress_bar.set_description(msg)
                 
                 iteration += 1
 
-        log_msg = 'Epoch %d: duration loss = %.3f ' % (epoch, np.mean(dur_losses))
+        log_msg = 'Epoch %d: duration loss = %.3f ' % (epoch+int(value), np.mean(dur_losses))
         log_msg += '| prior loss = %.3f ' % np.mean(prior_losses)
         log_msg += '| diffusion loss = %.3f\n' % np.mean(diff_losses)
         with open(f'{log_dir}/train.log', 'a') as f:
@@ -181,4 +200,4 @@ if __name__ == "__main__":
                           f'{log_dir}/alignment_{i}.png')
 
         ckpt = model.state_dict()
-        torch.save(ckpt, f=f"{log_dir}/grad_{epoch}.pt")
+        torch.save(ckpt, f"{log_dir}/grad_{epoch+int(value)}.pt")
