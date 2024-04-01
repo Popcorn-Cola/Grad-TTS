@@ -98,13 +98,16 @@ if __name__ == "__main__":
     if len(checkpoint_name) > 0:
         print("Checkpt exists. Checkpt name:", checkpoint_name[0])
         checkpoint = torch.load(checkpoint_name[0])
+        model.load_state_dict(checkpoint)
+        match = re.search(r'grad_(.*).pt', checkpoint_name[0])
+        if match:
+            value = match.group(1)
+            print("Starting from epoch", value)
+
     else: 
         print(f'Checkpt does not exist, {checkpoint_path}')
-    model.load_state_dict(checkpoint)
-    match = re.search(r'grad_(.*).pt', checkpoint_name[0])
-    if match:
-        value = match.group(1)
-        print("Starting from epoch", value)
+        ckpt = model.state_dict()
+        torch.save(ckpt, f"{log_dir}/grad_0.pt")
 
 
     print(('Number of encoder + duration predictor parameters: %.2fm' % (model.encoder.nparams/1e6)))
@@ -121,6 +124,7 @@ if __name__ == "__main__":
         logger.add_image(f'image_{i}/ground_truth', plot_tensor(mel.squeeze()),
                          global_step=0, dataformats='HWC')
         save_plot(mel.squeeze(), f'{log_dir}/original_{i}.png')
+
 
     print('Start training...')
     iteration = 0
@@ -170,34 +174,23 @@ if __name__ == "__main__":
         log_msg = 'Epoch %d: duration loss = %.3f ' % (epoch+int(value), np.mean(dur_losses))
         log_msg += '| prior loss = %.3f ' % np.mean(prior_losses)
         log_msg += '| diffusion loss = %.3f\n' % np.mean(diff_losses)
+        log_msg += '| Total loss = %.3f\n' % (np.mean(dur_losses) + np.mean(prior_losses) + np.mean(diff_losses))
+        
         with open(f'{log_dir}/train.log', 'a') as f:
+            f.write(log_msg)
+        
+        log_msg = 'Epoch %d: duration loss = %.3f ' % dur_loss.item()
+        log_msg += '| prior loss = %.3f ' % prior_loss.item()
+        log_msg += '| diffusion loss = %.3f\n' % diff_loss.item()
+        log_msg += '| Total loss = %.3f\n' % dur_loss.item() + prior_loss.item() + diff_loss.item()
+
+        with open(f'{log_dir}/train2.log', 'a') as f:
             f.write(log_msg)
 
         if epoch % params.save_every > 0:
             continue
 
-        model.eval()
-        print('Synthesis...')
-        with torch.no_grad():
-            for i, item in enumerate(test_batch):
-                x = item['x'].to(torch.long).unsqueeze(0).cuda()
-                x_lengths = torch.LongTensor([x.shape[-1]]).cuda()
-                y_enc, y_dec, attn = model(x, x_lengths, n_timesteps=50)
-                logger.add_image(f'image_{i}/generated_enc',
-                                 plot_tensor(y_enc.squeeze().cpu()),
-                                 global_step=iteration, dataformats='HWC')
-                logger.add_image(f'image_{i}/generated_dec',
-                                 plot_tensor(y_dec.squeeze().cpu()),
-                                 global_step=iteration, dataformats='HWC')
-                logger.add_image(f'image_{i}/alignment',
-                                 plot_tensor(attn.squeeze().cpu()),
-                                 global_step=iteration, dataformats='HWC')
-                save_plot(y_enc.squeeze().cpu(), 
-                          f'{log_dir}/generated_enc_{i}.png')
-                save_plot(y_dec.squeeze().cpu(), 
-                          f'{log_dir}/generated_dec_{i}.png')
-                save_plot(attn.squeeze().cpu(), 
-                          f'{log_dir}/alignment_{i}.png')
+                                 
 
         ckpt = model.state_dict()
         torch.save(ckpt, f"{log_dir}/grad_{epoch+int(value)}.pt")
