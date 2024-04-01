@@ -1,3 +1,6 @@
 logs/
 out/
-#out_backup/
+eval/
+*.pt
+*.png
+
