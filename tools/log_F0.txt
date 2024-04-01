@@ -1,0 +1,141 @@
+directory to be converted is, /exp/exp4/acp23xt/TAN-Grad-TTS/eval/converted/Epoch_0, printed
+Traceback (most recent call last):
+  File "/exp/exp4/acp23xt/TAN-Grad-TTS/tools/F0.py", line 18, in <module>
+    import pysptk
+ModuleNotFoundError: No module named 'pysptk'
+Traceback (most recent call last):
+  File "/exp/exp4/acp23xt/TAN-Grad-TTS/tools/F0.py", line 18, in <module>
+    import pysptk
+ModuleNotFoundError: No module named 'pysptk'
+Traceback (most recent call last):
+  File "/exp/exp4/acp23xt/TAN-Grad-TTS/tools/F0.py", line 18, in <module>
+    import pysptk
+ModuleNotFoundError: No module named 'pysptk'
+Traceback (most recent call last):
+  File "/exp/exp4/acp23xt/TAN-Grad-TTS/tools/F0.py", line 18, in <module>
+    import pysptk
+ModuleNotFoundError: No module named 'pysptk'
+Traceback (most recent call last):
+  File "/exp/exp4/acp23xt/TAN-Grad-TTS/tools/F0.py", line 18, in <module>
+    import pysptk
+ModuleNotFoundError: No module named 'pysptk'
+Traceback (most recent call last):
+  File "/exp/exp4/acp23xt/TAN-Grad-TTS/tools/F0.py", line 18, in <module>
+    import pysptk
+ModuleNotFoundError: No module named 'pysptk'
+Traceback (most recent call last):
+  File "/exp/exp4/acp23xt/TAN-Grad-TTS/tools/F0.py", line 18, in <module>
+    import pysptk
+ModuleNotFoundError: No module named 'pysptk'
+Traceback (most recent call last):
+  File "/exp/exp4/acp23xt/TAN-Grad-TTS/tools/F0.py", line 18, in <module>
+    import pysptk
+ModuleNotFoundError: No module named 'pysptk'
+Traceback (most recent call last):
+  File "/exp/exp4/acp23xt/TAN-Grad-TTS/tools/F0.py", line 18, in <module>
+    import pysptk
+ModuleNotFoundError: No module named 'pysptk'
+Traceback (most recent call last):
+  File "/exp/exp4/acp23xt/TAN-Grad-TTS/tools/F0.py", line 18, in <module>
+    import pysptk
+ModuleNotFoundError: No module named 'pysptk'
+Traceback (most recent call last):
+  File "/exp/exp4/acp23xt/TAN-Grad-TTS/tools/F0.py", line 18, in <module>
+    import pysptk
+ModuleNotFoundError: No module named 'pysptk'
+Traceback (most recent call last):
+  File "/exp/exp4/acp23xt/TAN-Grad-TTS/tools/F0.py", line 18, in <module>
+    import pysptk
+ModuleNotFoundError: No module named 'pysptk'
+Traceback (most recent call last):
+  File "/exp/exp4/acp23xt/TAN-Grad-TTS/tools/F0.py", line 18, in <module>
+    import pysptk
+ModuleNotFoundError: No module named 'pysptk'
+Traceback (most recent call last):
+  File "/exp/exp4/acp23xt/TAN-Grad-TTS/tools/F0.py", line 18, in <module>
+    import pysptk
+ModuleNotFoundError: No module named 'pysptk'
+Traceback (most recent call last):
+  File "/exp/exp4/acp23xt/TAN-Grad-TTS/tools/F0.py", line 18, in <module>
+    import pysptk
+ModuleNotFoundError: No module named 'pysptk'
+Traceback (most recent call last):
+  File "/exp/exp4/acp23xt/TAN-Grad-TTS/tools/F0.py", line 18, in <module>
+    import pysptk
+ModuleNotFoundError: No module named 'pysptk'
+Traceback (most recent call last):
+  File "/exp/exp4/acp23xt/TAN-Grad-TTS/tools/F0.py", line 18, in <module>
+    import pysptk
+ModuleNotFoundError: No module named 'pysptk'
+Traceback (most recent call last):
+  File "/exp/exp4/acp23xt/TAN-Grad-TTS/tools/F0.py", line 18, in <module>
+    import pysptk
+ModuleNotFoundError: No module named 'pysptk'
+Traceback (most recent call last):
+  File "/exp/exp4/acp23xt/TAN-Grad-TTS/tools/F0.py", line 18, in <module>
+    import pysptk
+ModuleNotFoundError: No module named 'pysptk'
+Traceback (most recent call last):
+  File "/exp/exp4/acp23xt/TAN-Grad-TTS/tools/F0.py", line 18, in <module>
+    import pysptk
+ModuleNotFoundError: No module named 'pysptk'
+Traceback (most recent call last):
+  File "/exp/exp4/acp23xt/TAN-Grad-TTS/tools/F0.py", line 18, in <module>
+    import pysptk
+ModuleNotFoundError: No module named 'pysptk'
+Traceback (most recent call last):
+  File "/exp/exp4/acp23xt/TAN-Grad-TTS/tools/F0.py", line 18, in <module>
+    import pysptk
+ModuleNotFoundError: No module named 'pysptk'
+Traceback (most recent call last):
+  File "/exp/exp4/acp23xt/TAN-Grad-TTS/tools/F0.py", line 18, in <module>
+    import pysptk
+ModuleNotFoundError: No module named 'pysptk'
+Traceback (most recent call last):
+  File "/exp/exp4/acp23xt/TAN-Grad-TTS/tools/F0.py", line 18, in <module>
+    import pysptk
+ModuleNotFoundError: No module named 'pysptk'
+Traceback (most recent call last):
+  File "/exp/exp4/acp23xt/TAN-Grad-TTS/tools/F0.py", line 18, in <module>
+    import pysptk
+ModuleNotFoundError: No module named 'pysptk'
+Traceback (most recent call last):
+  File "/exp/exp4/acp23xt/TAN-Grad-TTS/tools/F0.py", line 18, in <module>
+    import pysptk
+ModuleNotFoundError: No module named 'pysptk'
+Traceback (most recent call last):
+  File "/exp/exp4/acp23xt/TAN-Grad-TTS/tools/F0.py", line 18, in <module>
+    import pysptk
+ModuleNotFoundError: No module named 'pysptk'
+Traceback (most recent call last):
+  File "/exp/exp4/acp23xt/TAN-Grad-TTS/tools/F0.py", line 18, in <module>
+    import pysptk
+ModuleNotFoundError: No module named 'pysptk'
+Traceback (most recent call last):
+  File "/exp/exp4/acp23xt/TAN-Grad-TTS/tools/F0.py", line 18, in <module>
+    import pysptk
+ModuleNotFoundError: No module named 'pysptk'
+Traceback (most recent call last):
+  File "/exp/exp4/acp23xt/TAN-Grad-TTS/tools/F0.py", line 18, in <module>
+    import pysptk
+ModuleNotFoundError: No module named 'pysptk'
+Traceback (most recent call last):
+  File "/exp/exp4/acp23xt/TAN-Grad-TTS/tools/F0.py", line 18, in <module>
+    import pysptk
+ModuleNotFoundError: No module named 'pysptk'
+Traceback (most recent call last):
+  File "/exp/exp4/acp23xt/TAN-Grad-TTS/tools/F0.py", line 18, in <module>
+    import pysptk
+ModuleNotFoundError: No module named 'pysptk'
+Traceback (most recent call last):
+  File "/exp/exp4/acp23xt/TAN-Grad-TTS/tools/F0.py", line 18, in <module>
+    import pysptk
+ModuleNotFoundError: No module named 'pysptk'
+Traceback (most recent call last):
+  File "/exp/exp4/acp23xt/TAN-Grad-TTS/tools/F0.py", line 18, in <module>
+    import pysptk
+ModuleNotFoundError: No module named 'pysptk'
+Traceback (most recent call last):
+  File "/exp/exp4/acp23xt/TAN-Grad-TTS/tools/F0.py", line 18, in <module>
+    import pysptk
+ModuleNotFoundError: No module named 'pysptk'
