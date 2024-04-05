@@ -1,6 +1,7 @@
 logs/
 out/
 eval/
+test/
 *.pt
 *.png
 *.wav
