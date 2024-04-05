@@ -178,8 +178,8 @@ def calculate(
         gt_basename = _get_basename(gt_path)
 
         # load wav file as int16
-        gen_x, gen_fs = sf.read(gen_path, dtype="int16")
-        gt_x, gt_fs = sf.read(gt_path, dtype="int16")
+        gen_x, gen_fs = sf.read(gen_path, dtype="float64")
+        gt_x, gt_fs = sf.read(gt_path, dtype="float64")
 
         fs = gen_fs
         if gen_fs != gt_fs:

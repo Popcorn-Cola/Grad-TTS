@@ -20,7 +20,7 @@ sys.path.append('./hifi-gan/')
 from env import AttrDict
 from models import Generator as HiFiGAN
 
-valid_filelist_path = params.valid_filelist_path
+
 cmudict_path = params.cmudict_path
 add_blank = params.add_blank
 n_fft = params.n_fft
@@ -67,11 +67,11 @@ if __name__ == '__main__':
                         help='location to save the ground truth data')
     parser.add_argument('-z', '--cvt_dir', type=str, required=False, default='eval/converted',
                         help='location to save the converted data')
+    parser.add_argument('-o', '--original', type=str, required=False, default='',
+                        help='location of the .wav data to be evaluated/tested')
     parser.add_argument('-i', '--epoch_interval', type=int, required=False, default=100,
                         help='The interval between epochs to be evaluated')
-    parser.add_argument('-f', '--file', type=str, required=False, default='eval/original/text.txt',
-                        help='location of file to contain validation text')
-    parser.add_argument('-m', '--evaluation_mode', type=str, required=False, default='WAVPDFMEL',
+    parser.add_argument('-m', '--evaluation_mode', type=str, required=False, default='WAVPDFMEL_ENCODER',
                         help='WAVPDFMEL  or LOSSES or WAVPDFMEL_ENCODER')
     args = parser.parse_args()
 
@@ -80,13 +80,14 @@ if __name__ == '__main__':
     checkpoint_dir = args.checkpoint_dir
     epoch_interval = args.epoch_interval
     evaluation_mode = args.evaluation_mode
+    original = args.original
     # get cmu dictionary
     # importcmudict
     cmu = cmudict.CMUDict('./resources/cmu_dictionary')
 
     # import cmudict
-    print('Logging validation batch...')
-    valid_dataset = TextMelDataset(valid_filelist_path, cmudict_path, add_blank,
+    print('Logging validation/test dataset...')
+    valid_dataset = TextMelDataset(original, cmudict_path, add_blank,
                                   n_fft, n_feats, sample_rate, hop_length,
                                   win_length, f_min, f_max)
 
@@ -128,15 +129,16 @@ if __name__ == '__main__':
         if not os.path.exists(cvt_dir):
             os.makedirs(f'{cvt_dir}')
 
-        with open(args.file, 'w') as text_file:
+        gt_text = gt_dir+'/text.txt'
+        with open(gt_text, 'w') as text_file:
             for i, item in enumerate(valid_batch_text):
                 text_file.write(f"{valid_batch_text[i]}\n")
 
         texts = valid_batch_text
 
-        print('move the.wav file from LJSpeech dataset to eval/original directory')
+        print('move the.wav file from LJSpeech dataset to evaluartion/test directory')
         for i, filepath in enumerate(filepaths):
-            shutil.copy(filepath, f'eval/original/output_{i}.wav')
+            shutil.copy(filepath, f'{gt_dir}/output_{i}.wav')
 
         save_mel_spectrograms_to_file(valid_batch_mel, f'{gt_dir}')
 

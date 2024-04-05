@@ -1,103 +1,273 @@
-import os
-import matplotlib.pyplot as plt
 import argparse
-import torch
+import fnmatch
+import logging
+import multiprocessing as mp
+import os
+from typing import Dict, List, Tuple
+
+import librosa
 import numpy as np
+import pysptk
+import soundfile as sf
 from fastdtw import fastdtw
 from scipy import spatial
 
-def read_tensor(mel_folder, num_tensor): #get input 1.folder containing files of mel .pt  2. number of mel .pt files in that folder 
-    tensor_list = []
-    for i in range(num_tensor):
-        tensor_list.append(torch.load(f'{mel_folder}/{i}.pt'))
-    return tensor_list                   #return a list containing tensors
+
+def find_files(
+    root_dir: str, query: List[str] = ["*.flac", "*.wav"]) -> List[str]:
+
+    files = []
+    for root, dirnames, filenames in os.walk(root_dir, followlinks=True):
+        for q in query:
+            for filename in fnmatch.filter(filenames, q):
+                files.append(os.path.join(root, filename))
+
+    return files
+
+
+def sptk_extract(
+    x: np.ndarray,
+    fs: int,
+    n_fft: int = 512,
+    n_shift: int = 256,
+    mcep_dim: int = 25,
+    mcep_alpha: float = 0.41,
+    is_padding: bool = False,
+):
+    """Extract SPTK-based mel-cepstrum.
+    Args:
+        x (ndarray): 1D waveform array.
+        fs (int): Sampling rate
+        n_fft (int): FFT length in point (default=512).
+        n_shift (int): Shift length in point (default=256).
+        mcep_dim (int): Dimension of mel-cepstrum (default=25).
+        mcep_alpha (float): All pass filter coefficient (default=0.41).
+        is_padding (bool): Whether to pad the end of signal (default=False).
+    Returns:
+        ndarray: Mel-cepstrum with the size (N, n_fft).
+    """
+    # perform padding
+    if is_padding:
+        n_pad = n_fft - (len(x) - n_fft) % n_shift
+        x = np.pad(x, (0, n_pad), "reflect")
+
+    # get number of frames
+    n_frame = (len(x) - n_fft) // n_shift + 1
+
+    # get window function
+    win = pysptk.sptk.hamming(n_fft)
+
+    # check mcep and alpha
+    if mcep_dim is None or mcep_alpha is None:
+        mcep_dim, mcep_alpha = _get_best_mcep_params(fs)
+
+    # calculate spectrogram
+    mcep = [
+        pysptk.mcep(
+            x[n_shift * i : n_shift * i + n_fft] * win,
+            mcep_dim,
+            mcep_alpha,
+            eps=1e-6,
+            etype=1,
+        )
+        for i in range(n_frame)
+    ]
+
+    return np.stack(mcep)
 
 def _get_basename(path: str) -> str:
     return os.path.splitext(os.path.split(path)[-1])[0]
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('-z', '--cvt_directory', type=str, required=False, default='/exp/exp4/acp23xt/TAN-Grad-TTS/eval/converted', help='folder containing converted data')
-    parser.add_argument('-a', '--gt_directory', type=str, required=False,
-                        default='/exp/exp4/acp23xt/TAN-Grad-TTS/eval/original',
-                        help='folder containing original data')
-    parser.add_argument('-o', '--out_directory', type=str, required=False,
-                        default='/exp/exp4/acp23xt/TAN-Grad-TTS/eval/MCD',
-                        help='folder containing converted data')
-    parser.add_argument('-n', '--num_letter', type=int, required=False, default=6,
-                        help='number of prefix letter of folder name. The folder contains result of each epoch')
-    args = parser.parse_args()
 
-    out_directory = args.out_directory
-    cvt_directory = args.cvt_directory
-    gt_directory = args.gt_directory
-    num_letter = args.num_letter
-    os.makedirs(out_directory, exist_ok=True)
-    print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-    print('please ensure that mel tensor files are stored in i.pt format')
-    print('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-    print('read the ground truth mel')
-    tensor_num = int(0)
-    for file in os.listdir(gt_directory):
-        if file.endswith('.pt'):
-            tensor_num = tensor_num+1
+def _get_best_mcep_params(fs: int) -> Tuple[int, float]:
+    if fs == 16000:
+        return 23, 0.42
+    elif fs == 22050:
+        return 34, 0.45
+    elif fs == 24000:
+        return 34, 0.46
+    elif fs == 44100:
+        return 39, 0.53
+    elif fs == 48000:
+        return 39, 0.55
+    else:
+        raise ValueError(f"Not found the setting for {fs}.")
 
-    gt_tensor= read_tensor(f"{gt_directory}", tensor_num)
 
-    direcs = os.listdir(cvt_directory)# 'direcs' is a list containing name of sub-folders in a folder
-    direc_abspaths = [os.path.join(cvt_directory, direc) for direc in direcs]
+def calculate(
+    file_list: List[str],
+    gt_file_list: List[str],
+    args: argparse.Namespace,
+    mcd_dict: Dict,
+):
+    """Calculate MCD."""
+    for i, gen_path in enumerate(file_list):
+        corresponding_list = list(
+            filter(lambda gt_path: _get_basename(gt_path) == _get_basename(gen_path), gt_file_list)
+        )
+        assert len(corresponding_list) == 1
+        gt_path = corresponding_list[0]
+        gt_basename = _get_basename(gt_path)
 
-    MCD_mean = {}
-    MCD_std = {}
-    for index, direc_abspath in enumerate(direc_abspaths):
-        cvt_tensor = read_tensor(f"{direc_abspath}", tensor_num)
-        mcd_l = np.empty([])
-        for i in range(tensor_num):
-            # DTW
+        # load wav file as int16
+        gen_x, gen_fs = sf.read(gen_path, dtype="float64")
+        gt_x, gt_fs = sf.read(gt_path, dtype="float64")
 
-            # print(f'cvt_tensor[i].cpu() is {cvt_tensor[i].cpu().numpy().squeeze()}')
-            # print(np.shape(cvt_tensor[i].cpu().numpy().squeeze()))
-            # print(np.shape(gt_tensor[i].cpu().numpy().squeeze()))
-            cvt_np = cvt_tensor[i].cpu().numpy().squeeze().T
-            gt_np  = gt_tensor[i].cpu().numpy().squeeze().T
-            _, path = fastdtw(cvt_np, gt_np, dist=spatial.distance.euclidean)
-            # fs, signal = wavfile.read(f"{direc}/{i}.wav")
-            twf = np.array(path).T
-            cvt_np_dtw = cvt_np[twf[0]]
-            gt_np_dtw = gt_np[twf[1]]
-            diff2sum = np.sum((cvt_np_dtw - gt_np_dtw) ** 2, 1)
-            mcd = np.mean(10.0 / np.log(10.0) * np.sqrt(2 * diff2sum), 0)
-            mcd_l = np.append(mcd_l, mcd)
-        MCD_mean[direcs[index]] = np.mean(mcd_l)
-        MCD_std[direcs[index]] = np.std(mcd_l)
 
-    sorted_MCD_keys = sorted(MCD_mean.keys(), key=lambda x: int(x[num_letter:]))
-    
-    MCD_mean_list = [MCD_mean[key] for key in sorted_MCD_keys]
-    MCD_std_list = [MCD_std[key] for key in sorted_MCD_keys]
-    # with open(f"{cvt_directory}/MCD_f0.txt", 'w') as file:
-    #     for i in range(MCD):
-    #         file.write(str(MCD[i]) + ' ')
-    #         file.write('\n')
-    #         file.write(str(F0[i]) + ' ')
-    with open(f"{out_directory}/MCD_mean.txt", "w") as f:
-        for key in sorted_MCD_keys:
-            f.write(f'{key}  MCD is {MCD_mean[key]}/n')
-            
-    with open(f"{out_directory}/MCD_std.txt", "w") as f:
-        for key in sorted_MCD_keys:
-            f.write(f'{key}  MCD is {MCD_std[key]}/n')
+        fs = gen_fs
+        if gen_fs != gt_fs: raise ValueError("Sampling rate mismatch")
 
-    my_list = list(range(0, 3100, 100))
+        
+        
+        # extract ground truth and converted features
+        gen_mcep = sptk_extract(
+            x=gen_x,
+            fs=fs,
+            n_fft=1024, #args.n_fft,
+            n_shift=256, #args.n_shift,
+            mcep_dim=None, #args.mcep_dim,
+            mcep_alpha=None, #args.mcep_alpha,
+        )
+        gt_mcep = sptk_extract(
+            x=gt_x,
+            fs=fs,
+            n_fft=1024,
+            n_shift=256,
+            mcep_dim=None, #args.mcep_dim,
+            mcep_alpha=None, #args.mcep_alpha,
+        )
+        
 
-    plt.plot(my_list, MCD_mean_list)
-    plt.xlabel('Epochs')
-    plt.ylabel('MCD')
-    plt.title('MCD')
-    plt.savefig(f"{out_directory}/MCD.png")
+        # DTW
+        _, path = fastdtw(gen_mcep, gt_mcep, dist=spatial.distance.euclidean)
+        twf = np.array(path).T
+        gen_mcep_dtw = gen_mcep[twf[0]]
+        gt_mcep_dtw = gt_mcep[twf[1]]
 
-    plt.plot(my_list, MCD_std_list)
-    plt.xlabel('Epochs')
-    plt.ylabel('MCD')
-    plt.title('MCD')
-    plt.savefig(f"{out_directory}/MCD.png")
+        # MCD
+        diff2sum = np.sum((gen_mcep_dtw - gt_mcep_dtw) ** 2, 1)
+        mcd = np.mean(10.0 / np.log(10.0) * np.sqrt(2 * diff2sum), 0)
+        mcd_dict[gt_basename] = mcd
+
+
+
+def get_parser() -> argparse.Namespace:
+    """Get argument parser."""
+    parser = argparse.ArgumentParser(description="Evaluate Mel-cepstrum distortion.")
+    parser.add_argument(
+        "gt_wavdir_or_wavscp",
+        type=str,
+        help="Path of directory or wav.scp for ground truth waveforms.",
+    )
+    parser.add_argument(
+        "gen_wavdir_or_wavscp",
+        type=str,
+        help="Path of directory or wav.scp for generated waveforms.",
+    )
+    parser.add_argument(
+        "--outdir",
+        type=str,
+        help="Path of directory to write the results.",
+    )
+
+    # analysis related
+    parser.add_argument(
+        "--mcep_dim",
+        default=None,
+        type=int,
+        help=(
+            "Dimension of mel cepstrum coefficients. "
+            "If None, automatically set to the best dimension for the sampling."
+        ),
+    )
+    parser.add_argument(
+        "--mcep_alpha",
+        default=None,
+        type=float,
+        help=(
+            "All pass constant for mel-cepstrum analysis. "
+            "If None, automatically set to the best dimension for the sampling."
+        ),
+    )
+    parser.add_argument(
+        "--n_fft",
+        default=1024,
+        type=int,
+        help="The number of FFT points.",
+    )
+    parser.add_argument(
+        "--n_shift",
+        default=256,
+        type=int,
+        help="The number of shift points.",
+    )
+    parser.add_argument(
+        "--nj",
+        default=16,
+        type=int,
+        help="Number of parallel jobs.",
+    )
+    parser.add_argument(
+        "--verbose",
+        default=1,
+        type=int,
+        help="Verbosity level. Higher is more logging.",
+    )
+    return parser
+
+
+def main():
+    """Run MCD calculation in parallel."""
+    args = get_parser().parse_args()
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s (%(module)s:%(lineno)d) %(levelname)s: %(message)s",
+    )
+
+    # find files
+    if os.path.isdir(args.gen_wavdir_or_wavscp):
+        gen_files = sorted(find_files(args.gen_wavdir_or_wavscp))
+
+    if os.path.isdir(args.gt_wavdir_or_wavscp):
+        gt_files = sorted(find_files(args.gt_wavdir_or_wavscp))
+
+
+
+    logging.info("The number of generated utterances = %d" % len(gen_files))
+    file_lists = np.array_split(gen_files, args.nj)
+    file_lists = [f_list.tolist() for f_list in file_lists]
+
+    # multi processing
+    with mp.Manager() as manager:
+        mcd_dict = manager.dict()
+        processes = []
+        for f in file_lists:
+            p = mp.Process(target=calculate, args=(f, gt_files, args, mcd_dict))
+            p.start()
+            processes.append(p)
+
+        # wait for all process
+        for p in processes:
+            p.join()
+
+        # convert to standard list
+        mcd_dict = dict(mcd_dict)
+
+        # calculate statistics
+        mean_mcd = np.mean(np.array([v for v in mcd_dict.values()]))
+        std_mcd = np.std(np.array([v for v in mcd_dict.values()]))
+        logging.info(f"Average: {mean_mcd:.4f} ± {std_mcd:.4f}")
+
+
+
+    with open(f"{args.outdir}/mean_mcd.txt", "a") as f:
+        f.write(f"{mean_mcd:.4f}\n")
+
+    with open(f"{args.outdir}/std_mcd.txt", "a") as f:
+        f.write(f"{std_mcd:.4f}\n")
+
+    logging.info("Successfully finished MCD evaluation.")
+
+
+if __name__ == "__main__":
+    main()

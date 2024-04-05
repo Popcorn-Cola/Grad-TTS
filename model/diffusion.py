@@ -246,6 +246,7 @@ class Diffusion(BaseModule):
 
     def forward_diffusion(self, x0, mask, mu, t):
         time = t.unsqueeze(-1).unsqueeze(-1)
+
         cum_noise = get_noise(time, self.beta_min, self.beta_max, cumulative=True)
         mean = x0*torch.exp(-0.5*cum_noise) + mu*(1.0 - torch.exp(-0.5*cum_noise))
         variance = 1.0 - torch.exp(-cum_noise)
