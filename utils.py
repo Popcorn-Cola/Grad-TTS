@@ -6,15 +6,12 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # MIT License for more details.
 
-from __future__ import absolute_import
-from __future__ import print_function
 import os
 import glob
 import numpy as np
 import matplotlib.pyplot as plt
 
 import torch
-from six.moves import filter
 
 
 def intersperse(lst, item):

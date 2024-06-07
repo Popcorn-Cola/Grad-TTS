@@ -6,8 +6,6 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # MIT License for more details.
 
-from __future__ import absolute_import
-from __future__ import print_function
 import numpy as np
 from tqdm import tqdm
 
@@ -23,7 +21,6 @@ from model import GradTTS
 from data import TextMelDataset, TextMelBatchCollate
 from utils import plot_tensor, save_plot
 from text.symbols import symbols
-from six.moves import range
 
 
 train_filelist_path = params.train_filelist_path
@@ -179,13 +176,7 @@ if __name__ == "__main__":
         with open(f'{log_dir}/train.log', 'a') as f:
             f.write(log_msg)
         
-        log_msg = 'Epoch %d: duration loss = %.3f ' % dur_loss.item()
-        log_msg += '| prior loss = %.3f ' % prior_loss.item()
-        log_msg += '| diffusion loss = %.3f\n' % diff_loss.item()
-        log_msg += '| Total loss = %.3f\n' % dur_loss.item() + prior_loss.item() + diff_loss.item()
 
-        with open(f'{log_dir}/train2.log', 'a') as f:
-            f.write(log_msg)
 
         if epoch % params.save_every > 0:
             continue

@@ -6,8 +6,8 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # MIT License for more details.
 
-from __future__ import absolute_import
-from __future__ import print_function
+
+
 import numpy as np
 from tqdm import tqdm
 
@@ -20,7 +20,6 @@ from model import GradTTS
 from data import TextMelSpeakerDataset, TextMelSpeakerBatchCollate
 from utils import plot_tensor, save_plot
 from text.symbols import symbols
-from six.moves import range
 
 
 train_filelist_path = params.train_filelist_path
@@ -88,8 +87,8 @@ if __name__ == "__main__":
                     filter_channels, filter_channels_dp, 
                     n_heads, n_enc_layers, enc_kernel, enc_dropout, window_size, 
                     n_feats, dec_dim, beta_min, beta_max, pe_scale).cuda()
-    print(('Number of encoder parameters = %.2fm' % (model.encoder.nparams/1e6)))
-    print(('Number of decoder parameters = %.2fm' % (model.decoder.nparams/1e6)))
+    print('Number of encoder parameters = %.2fm' % (model.encoder.nparams/1e6))
+    print('Number of decoder parameters = %.2fm' % (model.decoder.nparams/1e6))
 
     print('Initializing optimizer...')
     optimizer = torch.optim.Adam(params=model.parameters(), lr=learning_rate)
